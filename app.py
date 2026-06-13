@@ -964,17 +964,15 @@ elif st.session_state.page == "lulc":
     if os.path.exists(lulc_path):
         st.success(f"LULC raster found: {lulc_path}")
     else:
-        with st.spinner("Downloading LULC data (~1.2MB)..."):
-            try:
-                import urllib.request
-                os.makedirs(os.path.dirname(lulc_path), exist_ok=True)
-                urllib.request.urlretrieve(lulc_url, lulc_path)
-                st.success("LULC raster downloaded.")
-            except Exception:
-                st.warning("LULC raster file not available.")
+        st.info("LULC raster not present. Click 'Load LULC Data' to download.")
 
     if st.button("Load LULC Data", type="primary", use_container_width=True):
         try:
+            if not os.path.exists(lulc_path):
+                with st.spinner("Downloading LULC data (~1.2MB)..."):
+                    import urllib.request
+                    os.makedirs(os.path.dirname(lulc_path), exist_ok=True)
+                    urllib.request.urlretrieve(lulc_url, lulc_path)
             import rasterio
             with rasterio.open(lulc_path) as src:
                 data = src.read(1)
